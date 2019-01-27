@@ -1312,9 +1312,7 @@ var Validator = function(rules, customMessages) {
     this.messages = Lang._make(lang);
     this.messages._setCustom(customMessages);
     this.setAttributeFormatter(Validator.prototype.attributeFormatter);
-
-    this.errors = new Errors();
-    this.errorCount = 0;
+    this.resetErrors();
 
     this.hasAsync = false;
     this.rules = this._parseRules(rules);
@@ -1351,6 +1349,8 @@ Validator.prototype = {
      * @return {boolean} Whether it passes; true = passes, false = fails
      */
     check: function() {
+        this.resetErrors();
+
         var self = this;
 
         for (var attribute in this.rules) {
@@ -1391,6 +1391,8 @@ Validator.prototype = {
      * @return {void}
      */
     checkAsync: function(passes, fails) {
+        this.resetErrors();
+
         var _this = this;
         passes = passes || function() {};
         fails = fails || function() {};
@@ -1756,6 +1758,16 @@ Validator.prototype = {
      */
     setAttributeFormatter: function(func) {
         this.messages._setAttributeFormatter(func);
+    },
+
+    /**
+     * Reset errors.
+     *
+     * @return {void}
+     */
+    resetErrors: function() {
+        this.errors = new Errors();
+        this.errorCount = 0;
     },
 
     /**
