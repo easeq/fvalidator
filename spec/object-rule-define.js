@@ -21,6 +21,26 @@ describe('object rule define', function() {
     })).to.be.false;
   });
 
+  it('mixed rule definition with message', function() {
+    var validator = new Validator({
+        name: [ { required_if: {
+            value: ['age', 30],
+            message: 'Required if age is 30'
+        }, min: {
+            value: 2,
+            message: 'Minimum value is 2'
+        } }, 'max:3:Max. value is 2' ]
+    });
+    expect(validator.passes({
+      age: 30,
+      name: 'Joe'
+    })).to.be.true;
+    expect(validator.fails({
+      age: 30,
+      name: 'Joe'
+    })).to.be.false;
+  });
+
   it('type checking', function() {
     var validator = new Validator({
       age: [ { 'in': [30, 31], not_in: [29, 40] } ]

@@ -1642,10 +1642,37 @@ Validator.prototype = {
         for (var i = 0, len = rulesArray.length; i < len; i++) {
             if (typeof rulesArray[i] === 'object') {
                 for (var rule in rulesArray[i]) {
-                    rules.push({
-                        name: rule,
-                        value: rulesArray[i][rule]
-                    });
+                    /**
+                     * Object rules can either be key: value or they can be an object of { value: '', message: ''}
+                     * {
+                     *   name: [ { required_if: ['age', 30], min: 2 } ]
+                     * }
+                     *
+                     * or
+                     *
+                     * {
+                     *     name: [ { required_if: {
+                     *         value: ['age', 30],
+                     *         message: 'Required if age is 30'
+                     *     }, min: {
+                     *         value: 2,
+                     *         message: 'Minimum value is 2'
+                     *     }
+                     * }
+                     */
+                    var ruleObj = { name: rule };
+                    if(typeof rulesArray[i][rule] === 'object' && !(rulesArray[i][rule] instanceof Array)) {
+                        if(rulesArray[i][rule].value) {
+                            ruleObj.value = rulesArray[i][rule].value;
+                        }
+
+                        if(rulesArray[i][rule].message) {
+                            ruleObj.message = rulesArray[i][rule].message;
+                        }
+                    } else {
+                        ruleObj.value = rulesArray[i][rule];
+                    }
+                    rules.push(ruleObj);
                 }
             } else {
                 rules.push(rulesArray[i]);
