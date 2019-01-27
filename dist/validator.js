@@ -1779,23 +1779,6 @@ Validator.prototype = {
     },
 
     /**
-     * Validate data and return result.
-     *
-     * @param {string} type
-     * @param {object} data
-     * @param {function} callback
-     * @return {boolean|undefined}
-     */
-    _validate: function(type, data, callback) {
-        this.input = data || {};
-        var async = this._checkAsync(type, callback);
-        if (async) {
-            return this.checkAsync(callback);
-        }
-        return this.check();
-    },
-
-    /**
      * Determine if validation passes
      *
      * @param {object} data
@@ -1803,7 +1786,12 @@ Validator.prototype = {
      * @return {boolean|undefined}
      */
     passes: function(data, passes) {
-        return this._validate('passes', data, passes);
+        this.input = data || {};
+        var async = this._checkAsync('passes', passes);
+        if (async) {
+            return this.checkAsync(passes);
+        }
+        return this.check();
     },
 
     /**
@@ -1814,7 +1802,12 @@ Validator.prototype = {
      * @return {boolean|undefined}
      */
     fails: function(data, fails) {
-        return !this._validate('fails', data, fails);
+        this.input = data || {};
+        var async = this._checkAsync('fails', fails);
+        if (async) {
+            return this.checkAsync(function() {}, fails);
+        }
+        return !this.check();
     },
 
     /**
