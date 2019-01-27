@@ -14,7 +14,8 @@ var Validator = function(rules, customMessages) {
     this.resetErrors();
 
     this.hasAsync = false;
-    this.rules = this._parseRules(rules);
+    this.rulesRaw = rules;
+    this.rules = {};
 };
 
 Validator.prototype = {
@@ -49,6 +50,7 @@ Validator.prototype = {
      */
     check: function() {
         this.resetErrors();
+        this.rules = this._parseRules(this.rulesRaw);
 
         var self = this;
 
@@ -91,6 +93,7 @@ Validator.prototype = {
      */
     checkAsync: function(passes, fails) {
         this.resetErrors();
+        this.rules = this._parseRules(this.rulesRaw);
 
         var _this = this;
         passes = passes || function() {};
@@ -252,7 +255,12 @@ Validator.prototype = {
             for (var propertyNumber = 0; propertyNumber < propertyValue.length; propertyNumber++) {
                 var workingValues = wildCardValues ? wildCardValues.slice() : [];
                 workingValues.push(propertyNumber);
-                this._parseRulesCheck(attribute.replace('*', propertyNumber), rulesArray, parsedRules, workingValues);
+                this._parseRulesCheck(
+                    attribute.replace('*', propertyNumber),
+                    rulesArray,
+                    parsedRules,
+                    workingValues
+                );
             }
         }
     },
@@ -270,6 +278,7 @@ Validator.prototype = {
 
         for (var i = 0, len = rulesArray.length, rule; i < len; i++) {
             rule = typeof rulesArray[i] === 'string' ? this._extractRuleAndRuleValue(rulesArray[i]) : rulesArray[i];
+
             if (rule.value) {
                 rule.value = this._replaceWildCards(rule.value, wildCardValues);
                 this._replaceWildCardsMessages(wildCardValues);
