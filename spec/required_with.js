@@ -9,28 +9,38 @@ if (typeof require !== 'undefined') {
 describe('required with', function() {
   it('should fail', function() {
     var validator = new Validator({
+      flavour: 'required_with:desert.first'
+    });
+    expect(validator.fails({
       desert: {
         first: 'icecream'
       },
       flavour: ''
-    }, {
-      flavour: 'required_with:desert.first'
-    });
-    expect(validator.fails()).to.be.true;
-    expect(validator.passes()).to.be.false;
+    })).to.be.true;
+    expect(validator.passes({
+      desert: {
+        first: 'icecream'
+      },
+      flavour: ''
+    })).to.be.false;
     expect(validator.errors.first('flavour')).to.equal('The flavour field is required when desert.first is not empty.');
   });
 
   it('should pass', function() {
     var validator = new Validator({
+      flavour: 'required_with:desert.first'
+    });
+    expect(validator.passes({
       desert: {
         first: 'icecream'
       },
       flavour: 'chocolate'
-    }, {
-      flavour: 'required_with:desert.first'
-    });
-    expect(validator.passes()).to.be.true;
-    expect(validator.fails()).to.be.false;
+    })).to.be.true;
+    expect(validator.fails({
+      desert: {
+        first: 'icecream'
+      },
+      flavour: 'chocolate'
+    })).to.be.false;
   });
 });

@@ -27,8 +27,6 @@ describe('lang / messages', function() {
     Validator.setMessages('zu', rawMessages);
     Validator.useLang('zu');
     var validator = new Validator({
-      zip: ''
-    }, {
       zip: 'required'
     });
 

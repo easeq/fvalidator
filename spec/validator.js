@@ -11,9 +11,6 @@ describe('Validator constructor', function() {
 
   beforeEach(function() {
     validator = new Validator({
-      name: 'David',
-      email: 'johndoe@gmail.com'
-    }, {
       name: 'required',
       email: 'required'
     }, {
@@ -52,12 +49,12 @@ describe('Validator constructor', function() {
   });
 
   it('should handle undefined data', function() {
-    var validator = new Validator(undefined, { name: 'required' });
-    validator.fails();
+    var validator = new Validator({ name: 'required' });
+    validator.fails(undefined);
   });
 
   it('should handle null data', function() {
-    var validator = new Validator(null, { name: 'required' });
-    validator.fails();
+    var validator = new Validator({ name: 'required' });
+    validator.fails(null);
   });
 }); // Page constructor

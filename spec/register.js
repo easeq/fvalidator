@@ -35,8 +35,6 @@ describe('register a custom validation rule', function() {
     });
 
     var validator = new Validator({
-      field: ['not a string']
-    }, {
       field: 'string'
     });
 
@@ -49,8 +47,6 @@ describe('register a custom validation rule', function() {
 
   it('should throw error in case of unknown validator rule', function () {
     var validator = new Validator({
-      field: 'test'
-    }, {
       field: 'unknown'
     });
 
@@ -64,8 +60,6 @@ describe('register a custom validation rule', function() {
     });
 
       var validator = new Validator({
-          field: 'test'
-      }, {
           field: 'unknown'
       });
 

@@ -9,52 +9,70 @@ if (typeof require !== 'undefined') {
 describe('different validation rule', function() {
   it('should fail when the 2 attributes are the same', function() {
     var validator = new Validator({
-      field1: 'abc',
-      field2: 'abc'
-    }, {
       field2: 'different:field1'
     });
-    expect(validator.passes()).to.be.false;
-    expect(validator.fails()).to.be.true;
+    expect(validator.passes({
+      field1: 'abc',
+      field2: 'abc'
+    })).to.be.false;
+    expect(validator.fails({
+      field1: 'abc',
+      field2: 'abc'
+    })).to.be.true;
   });
 
   it('should pass when the 2 attributes are different', function() {
     var validator = new Validator({
-      field1: 'abc',
-      field2: 'abcd'
-    }, {
       field2: 'different:field1'
     });
-    expect(validator.passes()).to.be.true;
-    expect(validator.fails()).to.be.false;
+    expect(validator.passes({
+      field1: 'abc',
+      field2: 'abcd'
+    })).to.be.true;
+    expect(validator.fails({
+      field1: 'abc',
+      field2: 'abcd'
+    })).to.be.false;
   });
 
   it('should pass if one of the 2 attributes is a nested path', function() {
     var validator = new Validator({
+      username: 'different:payload.username'
+    });
+    expect(validator.passes({
       payload: {
         pw: 'abc123',
         username: 'test123',
       },
       username: 'test',
-    }, {
-      username: 'different:payload.username'
-    });
-    expect(validator.passes()).to.be.true;
-    expect(validator.fails()).to.be.false;
+    })).to.be.true;
+    expect(validator.fails({
+      payload: {
+        pw: 'abc123',
+        username: 'test123',
+      },
+      username: 'test',
+    })).to.be.false;
   });
 
   it('should fail if one of the 2 attributes is an invalid nested path', function() {
     var validator = new Validator({
+      username: 'different:payload.username'
+    });
+    expect(validator.fails({
       payload: {
         pw: 'abc123',
         username: 'test123',
       },
       username: 'test123',
-    }, {
-      username: 'different:payload.username'
-    });
-    expect(validator.fails()).to.be.true;
-    expect(validator.passes()).to.be.false;
+    })).to.be.true;
+    expect(validator.passes({
+      payload: {
+        pw: 'abc123',
+        username: 'test123',
+      },
+      username: 'test123',
+    })).to.be.false;
     expect(validator.errors.first('username')).to.equal('The username and payload.username must be different.');
   });
 });

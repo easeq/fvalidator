@@ -9,64 +9,84 @@ if (typeof require !== 'undefined') {
 describe('same validation rule', function() {
   it('should fail when the 2 attributes are different', function() {
     var validator = new Validator({
-      pw: 'abc123',
-      pw2: 'abc1234'
-    }, {
       pw2: 'same:pw'
     });
-    expect(validator.fails()).to.be.true;
-    expect(validator.passes()).to.be.false;
+    expect(validator.fails({
+      pw: 'abc123',
+      pw2: 'abc1234'
+    })).to.be.true;
+    expect(validator.passes({
+      pw: 'abc123',
+      pw2: 'abc1234'
+    })).to.be.false;
     expect(validator.errors.first('pw2')).to.equal('The pw2 and pw fields must match.');
   });
 
   it('should fail when the the comparing attribute doesnt exist', function() {
     var validator = new Validator({
-      pw2: 'abc1234'
-    }, {
       pw2: 'same:pw'
     });
-    expect(validator.fails()).to.be.true;
-    expect(validator.passes()).to.be.false;
+    expect(validator.fails({
+      pw2: 'abc1234'
+    })).to.be.true;
+    expect(validator.passes({
+      pw2: 'abc1234'
+    })).to.be.false;
     expect(validator.errors.first('pw2')).to.equal('The pw2 and pw fields must match.');
   });
 
   it('should pass when the 2 attributes are equal', function() {
     var validator = new Validator({
-      pw: 'abc123',
-      pw2: 'abc123'
-    }, {
       pw2: 'same:pw'
     });
-    expect(validator.passes()).to.be.true;
-    expect(validator.fails()).to.be.false;
+    expect(validator.passes({
+      pw: 'abc123',
+      pw2: 'abc123'
+    })).to.be.true;
+    expect(validator.fails({
+      pw: 'abc123',
+      pw2: 'abc123'
+    })).to.be.false;
   });
 
   it('should pass if one of the 2 attributes is a nested path', function() {
     var validator = new Validator({
+      username: 'same:payload.username'
+    });
+    expect(validator.passes({
       payload: {
         pw: 'abc123',
         username: 'test',
       },
       username: 'test',
-    }, {
-      username: 'same:payload.username'
-    });
-    expect(validator.passes()).to.be.true;
-    expect(validator.fails()).to.be.false;
+    })).to.be.true;
+    expect(validator.fails({
+      payload: {
+        pw: 'abc123',
+        username: 'test',
+      },
+      username: 'test',
+    })).to.be.false;
   });
 
   it('should fail if one of the 2 attributes is an invalid nested path', function() {
     var validator = new Validator({
+      username: 'same:payload.username'
+    });
+    expect(validator.fails({
       payload: {
         pw: 'abc123',
         username: 'test123',
       },
       username: 'test',
-    }, {
-      username: 'same:payload.username'
-    });
-    expect(validator.fails()).to.be.true;
-    expect(validator.passes()).to.be.false;
+    })).to.be.true;
+    expect(validator.passes({
+      payload: {
+        pw: 'abc123',
+        username: 'test123',
+      },
+      username: 'test',
+    })).to.be.false;
     expect(validator.errors.first('username')).to.equal('The username and payload.username fields must match.');
   });
 });

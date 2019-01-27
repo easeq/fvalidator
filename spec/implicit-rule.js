@@ -13,8 +13,8 @@ describe('implicit rule tests', function() {
       return (val && val.match(/^\d*$/)) || val === null;
     },':attribute must be a number or empty');
 
-    var validator = new Validator({/* empty */},{value:'null_or_number'});
-    expect(validator.passes()).to.be.false;
+    var validator = new Validator({value:'null_or_number'});
+    expect(validator.passes({/* empty */})).to.be.false;
   });
 
   it('should pass implicit rule even when null', function() {
@@ -22,8 +22,8 @@ describe('implicit rule tests', function() {
       return (val && val.match(/^\d*$/)) || val === null;
     },':attribute must be a number or empty');
 
-    var validator = new Validator({value:null},{value:'null_or_number'});
-    expect(validator.passes()).to.be.true;
+    var validator = new Validator({value:'null_or_number'});
+    expect(validator.passes({value:null})).to.be.true;
   });
 
   it('should fail async implicit rule even when undefined', function(done) {
@@ -39,8 +39,8 @@ describe('implicit rule tests', function() {
         }, 50);
     }, ':attribute already taken');
 
-    var validator = new Validator({ /* empty */}, { value: 'async_null' });
-    validator.fails(done);
+    var validator = new Validator({ value: 'async_null' });
+    validator.fails({ /* empty */}, done);
   });
 
   it('should pass async implicit rule even when null', function(done) {
@@ -56,7 +56,7 @@ describe('implicit rule tests', function() {
         }, 50);
     }, ':attribute already taken');
 
-    var validator = new Validator({ value: null }, { value: 'async_null' });
-    validator.passes(done);
+    var validator = new Validator({ value: 'async_null' });
+    validator.passes({ value: null }, done);
   });
 });

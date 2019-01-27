@@ -22,7 +22,7 @@ describe('Validator', function () {
         [{ foo: { bar: { fizz: "buzz" } } }, { 'foo.bar.fizz' : "buzz" }],
         [{ foo: { bar: { fizz: ["buzz"] } } }, { 'foo.bar.fizz' : ["buzz"] }]
       ];
-      var validator = new Validator({}, {});
+      var validator = new Validator({});
 
       asserts.forEach(function (assert) {
         expect(validator._flattenObject(assert[0])).to.be.eql(assert[1]);

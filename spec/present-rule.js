@@ -9,19 +9,19 @@ if (typeof require !== 'undefined') {
 describe('present validation rule', function() {
   it('should pass with attribute present', function() {
     var validator = new Validator({
-      email: 'name@domain.com',
-    }, {
       email: 'present',
     });
-    expect(validator.passes()).to.be.true;
+    expect(validator.passes({
+      email: 'name@domain.com',
+    })).to.be.true;
   });
 
   it('should fail with attribute not present', function() {
     var validator = new Validator({
-    }, {
       email: 'present',
     });
-    expect(validator.passes()).to.be.false;
+    expect(validator.passes({
+    })).to.be.false;
   });
 
 });

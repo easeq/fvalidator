@@ -9,11 +9,11 @@ if (typeof require !== 'undefined') {
 describe('attribute formatter tests', function() {
   it('should replace _[] with spaces by default', function() {
     var validator = new Validator({
-      'all_users[3][first_name]': ''
-    }, {
       'all_users[3][first_name]': 'required'
     });
-    expect(validator.fails()).to.be.true;
+    expect(validator.fails({
+      'all_users[3][first_name]': ''
+    })).to.be.true;
     expect(validator.errors.first('all_users[3][first_name]')).to.equal('The all users 3 first name field is required.');
   });
 
@@ -23,19 +23,17 @@ describe('attribute formatter tests', function() {
       return attribute.replace(/_/, ' ');
     });
     var validator = new Validator({
-      first_name: ''
-    }, {
       first_name: 'required'
     });
-    expect(validator.fails()).to.be.true;
+    expect(validator.fails({
+      first_name: ''
+    })).to.be.true;
     expect(validator.errors.first('first_name')).to.equal('The first name field is required.');
     Validator.setAttributeFormatter(originalAttributeFormatter);
   });
 
   it('should be able configure attribute formatter for particular instance', function() {
     var validator = new Validator({
-      first_name: ''
-    }, {
       first_name: 'required'
     });
     validator.setAttributeFormatter(function(attribute) {

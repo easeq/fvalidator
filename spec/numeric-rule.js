@@ -9,82 +9,84 @@ if (typeof require !== 'undefined') {
 describe('numeric validation rule', function() {
   it('should pass with a numeric value', function() {
     var validator = new Validator({
-      age: 44
-    }, {
       age: 'numeric'
     });
-    expect(validator.passes()).to.be.true;
+    expect(validator.passes({
+      age: 44
+    })).to.be.true;
   });
 
   it('should pass with a decimal numeric value', function() {
     var validator = new Validator({
-      measurement: 0.5454
-    }, {
       measurement: 'numeric'
     });
-    expect(validator.passes()).to.be.true;
+    expect(validator.passes({
+      measurement: 0.5454
+    })).to.be.true;
   });
 
   it('should pass with a string numeric value', function() {
     var validator = new Validator({
-      age: '44'
-    }, {
       age: 'numeric'
     });
-    expect(validator.passes()).to.be.true;
+    expect(validator.passes({
+      age: '44'
+    })).to.be.true;
   });
 
   it('should pass with a string decimal numeric value', function() {
     var validator = new Validator({
-      measurement: '0.5454'
-    }, {
       measurement: 'numeric'
     });
-    expect(validator.passes()).to.be.true;
+    expect(validator.passes({
+      measurement: '0.5454'
+    })).to.be.true;
   });
 
   it('should fail with a string value', function() {
     var validator = new Validator({
-      age: '18something'
-    }, {
       age: 'numeric'
     });
-    expect(validator.fails()).to.be.true;
+    expect(validator.fails({
+      age: '18something'
+    })).to.be.true;
   });
 
   it('should fail with a boolean true value', function() {
     var validator = new Validator({
-      age: true
-    }, {
       age: 'numeric'
     });
-    expect(validator.fails()).to.be.true;
+    expect(validator.fails({
+      age: true
+    })).to.be.true;
   });
 
   it('should fail with a boolean false value', function() {
     var validator = new Validator({
-      age: false
-    }, {
       age: 'numeric'
     });
-    expect(validator.fails()).to.be.true;
+    expect(validator.fails({
+      age: false
+    })).to.be.true;
   });
 
   it('should pass with no value', function() {
-    var validator = new Validator({}, {
+    var validator = new Validator({
       age: 'numeric'
     });
-    expect(validator.passes()).to.be.true;
-    expect(validator.fails()).to.be.false;
+    expect(validator.passes({})).to.be.true;
+    expect(validator.fails({})).to.be.false;
   });
 
   it('should pass with an empty string value', function() {
     var validator = new Validator({
-      age: ''
-    }, {
       age: 'numeric'
     });
-    expect(validator.passes()).to.be.true;
-    expect(validator.fails()).to.be.false;
+    expect(validator.passes({
+      age: ''
+    })).to.be.true;
+    expect(validator.fails({
+      age: ''
+    })).to.be.false;
   });
 });

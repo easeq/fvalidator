@@ -54,16 +54,16 @@ describe('nested validation rules', function() {
   ];
 
   it('should pass with validation rules nested object', function() {
-    var validator = new Validator(dataPass, nestedObject);
-    expect(validator.passes()).to.be.true;
-    expect(validator.fails()).to.be.false;
+    var validator = new Validator( nestedObject);
+    expect(validator.passes(dataPass)).to.be.true;
+    expect(validator.fails(dataPass)).to.be.false;
   });
 
   it('should fail with validation rules nested object', function() {
     failAsserts.forEach(function (assert) {
-      var validator = new Validator(assert[0], nestedObject);
-      expect(validator.passes()).to.be.false;
-      expect(validator.fails()).to.be.true;
+      var validator = new Validator( nestedObject);
+      expect(validator.passes(assert[0])).to.be.false;
+      expect(validator.fails(assert[0])).to.be.true;
       Object.keys(assert[1]).forEach(function (key) {
         expect(validator.errors.first(key)).to.equal(assert[1][key]);
       });
@@ -71,16 +71,16 @@ describe('nested validation rules', function() {
   });
 
   it('should pass with validation rules flatten object', function() {
-    var validator = new Validator(dataPass, nestedFlatten);
-    expect(validator.passes()).to.be.true;
-    expect(validator.fails()).to.be.false;
+    var validator = new Validator( nestedFlatten);
+    expect(validator.passes(dataPass)).to.be.true;
+    expect(validator.fails(dataPass)).to.be.false;
   });
 
   it('should fail with validation rules flatten object', function() {
     failAsserts.forEach(function (assert) {
-      var validator = new Validator(assert[0], nestedFlatten);
-      expect(validator.passes()).to.be.false;
-      expect(validator.fails()).to.be.true;
+      var validator = new Validator( nestedFlatten);
+      expect(validator.passes(assert[0])).to.be.false;
+      expect(validator.fails(assert[0])).to.be.true;
       Object.keys(assert[1]).forEach(function (key) {
         expect(validator.errors.first(key)).to.equal(assert[1][key]);
       });

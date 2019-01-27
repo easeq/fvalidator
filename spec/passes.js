@@ -8,12 +8,12 @@ if (typeof require !== 'undefined') {
 
 describe('passes()', function() {
   it('should not duplicate error messages when called multiple times', function() {
-    var validator = new Validator({}, {
+    var validator = new Validator({
       login: 'required'
     });
 
-    validator.passes();
-    validator.passes();
+    validator.passes({});
+    validator.passes({});
 
     expect(validator.errors.all()).to.eql({
       login: [
@@ -27,9 +27,9 @@ describe('passes()', function() {
     var body = Object.create(null);
     body.a = 2;
 
-    var validator = new Validator(body, {'a': 'required'});
+    var validator = new Validator( {'a': 'required'});
 
-    expect(validator.passes()).to.be.true;
-    expect(validator.fails()).to.be.false;
+    expect(validator.passes(body)).to.be.true;
+    expect(validator.fails(body)).to.be.false;
   });
 });
