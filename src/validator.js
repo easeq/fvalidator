@@ -222,8 +222,6 @@ Validator.prototype = {
      * @return {object}
      */
     _parseRules: function(rules) {
-        console.log(rules);
-
         var parsedRules = {};
         rules = this._flattenObject(rules);
 
@@ -234,8 +232,6 @@ Validator.prototype = {
             this._parseRulesCheck(attribute, rulesArray, parsedRules);
         }
         return parsedRules;
-
-
     },
 
     _parseRulesCheck: function(attribute, rulesArray, parsedRules, wildCardValues) {
@@ -491,7 +487,7 @@ Validator.prototype = {
      */
     _validate: function(type, data, callback) {
         this.input = data || {};
-        var async = this._checkAsync('type', callback);
+        var async = this._checkAsync(type, callback);
         if (async) {
             return this.checkAsync(callback);
         }
