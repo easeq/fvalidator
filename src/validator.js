@@ -64,7 +64,7 @@ Validator.prototype = {
 
             for (var i = 0, len = attributeRules.length, rule, ruleOptions, rulePassed; i < len; i++) {
                 ruleOptions = attributeRules[i];
-                rule = this.getRule(ruleOptions.name);
+                rule = this.getRule(ruleOptions.name, ruleOptions.message || null);
 
                 if (!this._isValidatable(rule, inputValue)) {
                     continue;
@@ -133,7 +133,7 @@ Validator.prototype = {
             for (var i = 0, len = attributeRules.length, rule, ruleOptions; i < len; i++) {
                 ruleOptions = attributeRules[i];
 
-                rule = this.getRule(ruleOptions.name);
+                rule = this.getRule(ruleOptions.name, ruleOptions.message || null);
 
                 if (!this._isValidatable(rule, inputValue)) {
                     continue;
@@ -509,10 +509,16 @@ Validator.prototype = {
      * Get validation rule
      *
      * @param  {string} name
+     * @param  {string} customMessage
      * @return {Rule}
      */
-    getRule: function(name) {
-        return Rules.make(name, this);
+    getRule: function(name, customMessage) {
+        var rule = Rules.make(name, this);
+        if(customMessage) {
+            rule.setCustomMessage(customMessage);
+        }
+
+        return rule;
     },
 
     /**

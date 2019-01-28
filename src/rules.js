@@ -517,6 +517,16 @@ Rule.prototype = {
   },
 
   /**
+   * Set a custom message.
+   *
+   * @param  {string|undefined} message Custom error message
+   * @return {void}
+   */
+  setCustomMessage: function(message) {
+    this._customMessage = message;
+  },
+
+  /**
    * Set the async callback response
    *
    * @param  {boolean|undefined} passes  Whether validation passed
