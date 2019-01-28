@@ -1354,16 +1354,51 @@ Validator.prototype = {
      */
     attributeFormatter: Attributes.formatter,
 
+    setInput: function(input) {
+        this.input = input || {};
+    },
+
+    single: function(inputValue, attribute) {
+        var self = this;
+        parsedRule = this._parseRule(this.rulesRaw, attribute);
+
+        var attributeRules = parsedRule[attribute];
+        if (this._hasRule(attribute, ['sometimes']) && !inputValue) {
+            return this.errors.has(attribute);
+        }
+
+        for (var i = 0, len = attributeRules.length, rule, ruleOptions, rulePassed; i < len; i++) {
+            ruleOptions = attributeRules[i];
+            rule = this.getRule(ruleOptions.name, ruleOptions.message || null);
+
+            if (!this._isValidatable(rule, inputValue)) {
+                continue;
+            }
+
+            rulePassed = rule.validate(inputValue, ruleOptions.value, attribute);
+            console.log('rulePassed', ruleOptions, rulePassed);
+
+            if (!rulePassed) {
+                this._addFailure(rule);
+            }
+
+            if (this._shouldStopValidating(attribute, rulePassed)) {
+                break;
+            }
+        }
+
+        return this.errors.has(attribute);
+    },
+
     /**
      * Run validator
      *
      * @return {boolean} Whether it passes; true = passes, false = fails
      */
     check: function() {
+        var self = this;
         this.resetErrors();
         this.rules = this._parseRules(this.rulesRaw);
-
-        var self = this;
 
         for (var attribute in this.rules) {
             var attributeRules = this.rules[attribute];
@@ -1529,6 +1564,18 @@ Validator.prototype = {
             }
         }
         return copy;
+    },
+
+    _parseRule: function(rules, attribute) {
+        if(!rules[attribute]) {
+            return;
+        }
+
+        var rawSingleRule = {},
+            parsedRule = {};
+        rawSingleRule[attribute] = rules[attribute];
+
+        return this._parseRules(rawSingleRule);
     },
 
     /**
@@ -1850,7 +1897,7 @@ Validator.prototype = {
      * @return {boolean|undefined}
      */
     passes: function(data, passes) {
-        this.input = data || {};
+        this.setInput(data);
         var async = this._checkAsync('passes', passes);
         if (async) {
             return this.checkAsync(passes);
@@ -1866,7 +1913,7 @@ Validator.prototype = {
      * @return {boolean|undefined}
      */
     fails: function(data, fails) {
-        this.input = data || {};
+        this.setInput(data);
         var async = this._checkAsync('fails', fails);
         if (async) {
             return this.checkAsync(function() {}, fails);
