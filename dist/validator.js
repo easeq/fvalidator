@@ -1667,7 +1667,7 @@ Validator.prototype = {
                      *     }, min: {
                      *         value: 2,
                      *         message: 'Minimum value is 2'
-                     *     }
+                     *     } ]
                      * }
                      */
                     var ruleObj = { name: rule };
