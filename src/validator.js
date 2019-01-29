@@ -11,8 +11,9 @@ var Validator = function(rules, customMessages) {
     this.messages = Lang._make(lang);
     this.messages._setCustom(customMessages);
     this.setAttributeFormatter(Validator.prototype.attributeFormatter);
-    this.resetErrors();
-
+    this.errors = new Errors();
+    this.errorCount = 0;
+    
     this.hasAsync = false;
     this.rulesRaw = rules;
     this.rules = {};
@@ -545,7 +546,7 @@ Validator.prototype = {
      * @return {void}
      */
     resetErrors: function() {
-        this.errors = new Errors();
+        this.errors.clear();
         this.errorCount = 0;
     },
 
