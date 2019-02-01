@@ -4,6 +4,57 @@ var Errors = require('./errors');
 var Attributes = require('./attributes');
 var AsyncResolvers = require('./async');
 
+var isValidArrayIndex = function (s) {
+    return /^\+?[0-9][\d]*$/.test(s);
+};
+
+var stringToPath = function (path) {
+    if (typeof path !== 'string') {
+        return path;
+    }
+
+    var output = [];
+    path.split('.').forEach(function (item, index) {
+        item.split(/\[([^}]+)\]/g).forEach(function (key) {
+            if (key.length > 0) {
+                output.push(key);
+            }
+        });
+    });
+
+    return output;
+};
+
+var getValue = function (obj, path, def) {
+	path = stringToPath(path);
+
+	var current = obj;
+	for (var i = 0; i < path.length; i++) {
+		if (!current[path[i]]) {
+            return def;
+        }
+		current = current[path[i]];
+	}
+
+	return current;
+};
+
+var setValue = function (obj, path, value) {
+	path = stringToPath(path);
+
+	var current = obj;
+	for (var i = 0; i < path.length; i++) {
+		if (!current[path[i]] && i !== path.length - 1) {
+            current[path[i]] = isValidArrayIndex(path[i + 1]) ? [] : {};
+            current = current[path[i]];
+        } else if (i === path.length - 1) {
+            current[path[i]] = value;
+        } else {
+            current = current[path[i]];
+        }
+	}
+};
+
 var Validator = function(rules, customMessages) {
     var lang = Validator.getDefaultLang();
     this.input = {};
@@ -13,7 +64,7 @@ var Validator = function(rules, customMessages) {
     this.setAttributeFormatter(Validator.prototype.attributeFormatter);
     this.errors = new Errors();
     this.errorCount = 0;
-    
+
     this.hasAsync = false;
     this.rulesRaw = rules;
     this.rules = {};
@@ -44,14 +95,27 @@ Validator.prototype = {
      */
     attributeFormatter: Attributes.formatter,
 
+    // single(36, 'foo.0.bar.0.age');
+    // split to object
+    //
     single: function(inputValue, attribute, data) {
         var self = this;
         this.resetErrors();
         this.input = data || {};
 
-        parsedRule = this._parseRule(this.rulesRaw, attribute);
+        var ruleRaw = attribute;
+        var isNested = false;
+        var keys = stringToPath(attribute);
+        if(keys.length > 1) {
+            ruleRaw = keys.map(function(currentValue) {
+                return isValidArrayIndex(currentValue) ? '*' : currentValue;
+            }).join('.');
+        }
 
+        setValue(this.input, attribute, inputValue);
+        parsedRule = this._parseRule(this.rulesRaw, ruleRaw);
         var attributeRules = parsedRule[attribute];
+        // console.log(attributeRules);
         if (this._hasRule(attribute, ['sometimes']) && !inputValue) {
             return this.errors.has(attribute) === false;
         }
@@ -261,7 +325,6 @@ Validator.prototype = {
         var rawSingleRule = {},
             parsedRule = {};
         rawSingleRule[attribute] = rules[attribute];
-
         return this._parseRules(rawSingleRule);
     },
 

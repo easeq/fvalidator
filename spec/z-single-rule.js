@@ -23,55 +23,57 @@ describe('Single rule', function() {
         expect(validator.single(null, 'name', { age: 30, name: 'Joe' })).to.be.false;
     });
 
-    // it('wildcard', function() {
-    //     var validator = new Validator({
-    //         'foo.*.bar.*.people.*.name': 'required',
-    //         'foo.*.bar.*.people.*.age': 'numeric',
-    //         'foo.*.bar.*.people.*.term': 'accepted',
-    //         'foo.*.bar.*.people.*.isActive': 'boolean',
-    //     });
-    //
-    //     var wildcardInput = {
-    //         foo: [{
-    //             bar: [{
-    //                     people: [{
-    //                             name: '',
-    //                             age: 'aa',
-    //                             term: false,
-    //                             isActive: 'not'
-    //                         },
-    //                         {
-    //                             name: '',
-    //                             age: 'aa',
-    //                             term: false,
-    //                             isActive: 'not'
-    //                         }
-    //                     ]
-    //                 },
-    //                 {
-    //                     people: [{
-    //                             name: '',
-    //                             age: 'aa',
-    //                             term: false,
-    //                             isActive: 'not'
-    //                         },
-    //                         {
-    //                             name: '',
-    //                             age: 'aa',
-    //                             term: false,
-    //                             isActive: 'not'
-    //                         }
-    //                     ]
-    //                 }
-    //             ]
-    //         }]
-    //     };
-    //
-    //     expect(validator.single(null, 'foo.*.bar.*.people.*.age', wildcardInput)).to.be.false;
-    //
-    //     // expect(validator.single(30, 'age')).to.be.true;
-    //     // expect(validator.single(null, 'name')).to.be.true;
-    //     // expect(validator.single(null, 'name', { age: 16, name: '' })).to.be.true;
-    //     // expect(validator.single(null, 'name', { age: 30, name: 'Joe' })).to.be.false;
-    // });
+    it('wildcard', function() {
+        var validator = new Validator({
+            'foo.*.bar.*.people.*.name': 'required',
+            'foo.*.bar.*.people.*.age': 'numeric|min:2',
+            'foo.*.bar.*.people.*.term': 'accepted',
+            'foo.*.bar.*.people.*.isActive': 'required_if:foo.*.bar.*.people.*.age,25|boolean',
+        });
+
+        var wildcardInput = {
+            foo: [{
+                bar: [{
+                        people: [{
+                                name: '',
+                                age: 25,
+                                term: false,
+                                isActive: 'not'
+                            },
+                            {
+                                name: '',
+                                age: 'aa',
+                                term: false,
+                                isActive: 'not'
+                            }
+                        ]
+                    },
+                    {
+                        people: [{
+                                name: '',
+                                age: 'aa',
+                                term: false,
+                                isActive: 'not'
+                            },
+                            {
+                                name: '',
+                                age: 25,
+                                term: false,
+                                isActive: 'not'
+                            }
+                        ]
+                    }
+                ]
+            }]
+        };
+
+        // expect(validator.single('aa', 'foo.0.bar.0.people.1.age')).to.be.false;
+        // expect(validator.single('2', 'foo.0.bar.0.people.1.age')).to.be.false;
+        // expect(validator.single('25', 'foo.0.bar.0.people.1.age')).to.be.true;
+        // expect(validator.single('aa', 'foo.0.bar.1.people.1.age', wildcardInput)).to.be.false;
+        // expect(validator.single('not', 'foo.0.bar.1.people.1.isActive', wildcardInput)).to.be.false;
+        // expect(validator.single('not', 'foo.0.bar.0.people.0.isActive', wildcardInput)).to.be.false;
+        // expect(validator.single('yes', 'foo.0.bar.0.people.0.isActive')).to.be.false;
+        expect(validator.single('yes', 'foo.0.bar.0.people.0.isActive', wildcardInput)).to.be.true;
+    });
 });

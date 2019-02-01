@@ -1,4 +1,4 @@
-/*! validatorjs - v3.15.0 -  - 2019-01-29 */
+/*! validatorjs - v3.15.0 -  - 2019-02-01 */
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.Validator = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 function AsyncResolvers(onFailedOne, onResolvedAll) {
   this.onResolvedAll = onResolvedAll;
@@ -1318,6 +1318,57 @@ var Errors = require('./errors');
 var Attributes = require('./attributes');
 var AsyncResolvers = require('./async');
 
+var isValidArrayIndex = function (s) {
+    return /^\+?[0-9][\d]*$/.test(s);
+};
+
+var stringToPath = function (path) {
+    if (typeof path !== 'string') {
+        return path;
+    }
+
+    var output = [];
+    path.split('.').forEach(function (item, index) {
+        item.split(/\[([^}]+)\]/g).forEach(function (key) {
+            if (key.length > 0) {
+                output.push(key);
+            }
+        });
+    });
+
+    return output;
+};
+
+var getValue = function (obj, path, def) {
+	path = stringToPath(path);
+
+	var current = obj;
+	for (var i = 0; i < path.length; i++) {
+		if (!current[path[i]]) {
+            return def;
+        }
+		current = current[path[i]];
+	}
+
+	return current;
+};
+
+var setValue = function (obj, path, value) {
+	path = stringToPath(path);
+
+	var current = obj;
+	for (var i = 0; i < path.length; i++) {
+		if (!current[path[i]] && i !== path.length - 1) {
+            current[path[i]] = isValidArrayIndex(path[i + 1]) ? [] : {};
+            current = current[path[i]];
+        } else if (i === path.length - 1) {
+            current[path[i]] = value;
+        } else {
+            current = current[path[i]];
+        }
+	}
+};
+
 var Validator = function(rules, customMessages) {
     var lang = Validator.getDefaultLang();
     this.input = {};
@@ -1327,7 +1378,7 @@ var Validator = function(rules, customMessages) {
     this.setAttributeFormatter(Validator.prototype.attributeFormatter);
     this.errors = new Errors();
     this.errorCount = 0;
-    
+
     this.hasAsync = false;
     this.rulesRaw = rules;
     this.rules = {};
@@ -1358,13 +1409,25 @@ Validator.prototype = {
      */
     attributeFormatter: Attributes.formatter,
 
+    // single(36, 'foo.0.bar.0.age');
+    // split to object
+    //
     single: function(inputValue, attribute, data) {
         var self = this;
         this.resetErrors();
         this.input = data || {};
 
-        parsedRule = this._parseRule(this.rulesRaw, attribute);
+        var ruleRaw = attribute;
+        var isNested = false;
+        var keys = stringToPath(attribute);
+        if(keys.length > 1) {
+            ruleRaw = keys.map(function(currentValue) {
+                return isValidArrayIndex(currentValue) ? '*' : currentValue;
+            }).join('.');
+        }
 
+        setValue(this.input, attribute, inputValue);
+        parsedRule = this._parseRule(this.rulesRaw, ruleRaw);
         var attributeRules = parsedRule[attribute];
         if (this._hasRule(attribute, ['sometimes']) && !inputValue) {
             return this.errors.has(attribute) === false;
@@ -1575,7 +1638,6 @@ Validator.prototype = {
         var rawSingleRule = {},
             parsedRule = {};
         rawSingleRule[attribute] = rules[attribute];
-
         return this._parseRules(rawSingleRule);
     },
 
