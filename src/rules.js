@@ -44,7 +44,7 @@ var rules = {
 
   required_if: function(val, req, attribute) {
     req = this.getParameters();
-    if (this.validator._objectPath(this.validator.input, req[0]) === req[1]) {
+    if (this.validator._objectPath(this.validator.input, req[0]) == req[1]) {
       return this.validator.getRule('required').validate(val);
     }
 
@@ -53,7 +53,7 @@ var rules = {
 
   required_unless: function(val, req, attribute) {
     req = this.getParameters();
-    if (this.validator._objectPath(this.validator.input, req[0]) !== req[1]) {
+    if (this.validator._objectPath(this.validator.input, req[0]) != req[1]) {
       return this.validator.getRule('required').validate(val);
     }
 

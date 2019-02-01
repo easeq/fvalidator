@@ -113,10 +113,10 @@ Validator.prototype = {
         }
 
         setValue(this.input, attribute, inputValue);
-        parsedRule = this._parseRule(this.rulesRaw, ruleRaw);
-        var attributeRules = parsedRule[attribute];
-        // console.log(attributeRules);
-        if (this._hasRule(attribute, ['sometimes']) && !inputValue) {
+        parsedRules = this._parseRules(this.rulesRaw);
+        var attributeRules = parsedRules[attribute];
+
+        if (this._hasRule(attribute, ['sometimes'])  && !this._suppliedWithData(attribute)) {
             return this.errors.has(attribute) === false;
         }
 
@@ -129,6 +129,7 @@ Validator.prototype = {
             }
 
             rulePassed = rule.validate(inputValue, ruleOptions.value, attribute);
+
             if (!rulePassed) {
                 this._addFailure(rule);
             }

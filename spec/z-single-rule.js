@@ -67,13 +67,13 @@ describe('Single rule', function() {
             }]
         };
 
-        // expect(validator.single('aa', 'foo.0.bar.0.people.1.age')).to.be.false;
-        // expect(validator.single('2', 'foo.0.bar.0.people.1.age')).to.be.false;
-        // expect(validator.single('25', 'foo.0.bar.0.people.1.age')).to.be.true;
-        // expect(validator.single('aa', 'foo.0.bar.1.people.1.age', wildcardInput)).to.be.false;
-        // expect(validator.single('not', 'foo.0.bar.1.people.1.isActive', wildcardInput)).to.be.false;
-        // expect(validator.single('not', 'foo.0.bar.0.people.0.isActive', wildcardInput)).to.be.false;
-        // expect(validator.single('yes', 'foo.0.bar.0.people.0.isActive')).to.be.false;
-        expect(validator.single('yes', 'foo.0.bar.0.people.0.isActive', wildcardInput)).to.be.true;
+        expect(validator.single('aa', 'foo.0.bar.0.people.1.age')).to.be.false;
+        expect(validator.single('2', 'foo.0.bar.0.people.1.age')).to.be.false;
+        expect(validator.single('25', 'foo.0.bar.0.people.1.age')).to.be.true;
+        expect(validator.single('aa', 'foo.0.bar.1.people.1.age', wildcardInput)).to.be.false;
+        expect(validator.single('not', 'foo.0.bar.1.people.1.isActive', wildcardInput)).to.be.false;
+        expect(validator.single('not', 'foo.0.bar.0.people.0.isActive', wildcardInput)).to.be.false;
+        expect(validator.single('yes', 'foo.0.bar.0.people.0.isActive')).to.be.false;
+        expect(validator.single(true, 'foo.0.bar.0.people.0.isActive', wildcardInput)).to.be.true;
     });
 });
